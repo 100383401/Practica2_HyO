@@ -58,11 +58,14 @@ def acciones(estado):
 	return acciones
 
 def resultado (estado, accion):
-	siguienteEstado = None
+
+	"""Si la accion es Mover"""
 	if(accion[0] == 'Mover'):
 		print("\nAccion a realizar: " + str(accion))
 		estado[0] = accion[1]
 		print(str(estado) + "\n")
+
+	"""Si la accion es Recoger"""
 	if(accion == 'Recoger'):
 		final = 0
 		destino = None
@@ -73,16 +76,33 @@ def resultado (estado, accion):
 			if(estado[2][i][0] == estado[0]):
 				print(accion)
 				final = True
-				estado[2][i][0] = 'NE'
 				destino = estado[2][i][1]
 				print(destino)
-				numDestino = int(destino.split('C')[1])
-				print(numDestino)
+				numDestino = int(destino.split('C')[1]) - 1
 				estado[1][numDestino] += 1
+				estado[4] -= 1
+				estado[2][i][0] = 'B'
 			i += 1
-		print(str(estado) + "\n")
 
-	return siguienteEstado
+	"""Si la accion es Dejar"""
+	if(accion[0] == 'Dejar'):
+		final = 0
+		destino = None
+		numDestino = 0
+		i = 0
+		print("\nAccion a realizar: " + str(accion))
+		while (final == False and i < len(estado[2])):
+			if(estado[2][i][1] == accion[1] and estado[2][i][0] == 'B'):
+				destino = estado[2][i][1]
+				print(destino)
+				numDestino = int(destino.split('C')[1]) - 1
+				print(numDestino)
+				estado[1][numDestino] -= 1
+				estado[4] += 1
+				estado[2][i][0] = 'E'
+			i += 1
+
+	return estado
 
 f = open ("ejemplos/problema3.prob")
 linea = f.readline()
@@ -186,7 +206,7 @@ print("\nCUIDADOOOOOO SON 7 ALUMNOS, NO " + str(numeroAlumnos) + ", EN P7 SE LIA
 numeroColegios = len(arrayColegios)
 alumnosInicio = []
 for i in range (0 , numeroColegios):
-	alumnosInicio.append(0)
+	alumnosInicio.append(1)
 
 """Definicion estado inicial"""
 estadoInicial = [posBusInicial, alumnosInicio, estadoAlumno, numeroAlumnos, capacidadBus]
@@ -201,6 +221,9 @@ a = acciones(estado)
 print (a)
 
 b = resultado(estado, 'Recoger')
+print(str(b) + "\n")
+b = resultado(estado, ('Dejar', 'C1'))
+print(str(b) + "\n")
 
 arrayCostesParadasAdyacentes = []
 arrayCostesParadasAdyacentes = costes(numParadaBus, 5)
